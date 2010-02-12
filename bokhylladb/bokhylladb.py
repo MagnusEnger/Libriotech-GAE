@@ -94,7 +94,8 @@ class MainHandler(webapp.RequestHandler):
         # Links to Bokhylla based on URN
         for urn in item.urn:
           jsonitem["urn_url"].append("http://www.nb.no/utlevering/contentview.jsf?urn=" + urn)
-          jsonitem["pdf_url"].append("http://www.nb.no/utlevering/pdfbook?id=" + urn[14:])
+          if item.public:
+            jsonitem["pdf_url"].append("http://www.nb.no/utlevering/pdfbook?id=" + urn[14:])
         jsonitem["bibsys_url"] = []
         # Links to BIBSYS, based on oaiid
         for oaiid in item.oaiid:
