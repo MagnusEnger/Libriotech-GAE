@@ -78,28 +78,7 @@ class MainHandler(webapp.RequestHandler):
       # Translate items into dicts that can be serialzied as JSON
       jsonitems = []
       for item in items:
-        jsonitem = {}
-        jsonitem["no"] = unicode(item.no)
-        jsonitem["urn"] = list(item.urn)
-        jsonitem["oaiids"] = list(item.oaiid)
-        jsonitem["sesamids"] = list(item.sesamid)
-        jsonitem["isbn"] = list(item.isbn)
-        jsonitem["pages"] = unicode(item.pages)
-        jsonitem["title"] = unicode(item.title)
-        jsonitem["creator"] = unicode(item.creator)
-        jsonitem["public"] = unicode(item.public)
-        jsonitem["bokhylla"] = unicode(item.bokhylla)
-        jsonitem["urn_url"] = []
-        jsonitem["pdf_url"] = []
-        # Links to Bokhylla based on URN
-        for urn in item.urn:
-          jsonitem["urn_url"].append("http://www.nb.no/utlevering/contentview.jsf?urn=" + urn)
-          if item.public:
-            jsonitem["pdf_url"].append("http://www.nb.no/utlevering/pdfbook?id=" + urn[14:])
-        jsonitem["bibsys_url"] = []
-        # Links to BIBSYS, based on oaiid
-        for oaiid in item.oaiid:
-          jsonitem["bibsys_url"].append("http://ask.bibsys.no/ask/action/show?pid=" + oaiid[21:] + "&kid=biblio")
+        jsonitem = item2dict(item)
         jsonitems.append(jsonitem)
       self.response.out.write(simplejson.dumps(jsonitems))
     else:
@@ -121,6 +100,31 @@ class ViewItem(webapp.RequestHandler):
     path = os.path.join(os.path.dirname(__file__), 'tmpl/index.tmpl')
     self.response.out.write(template.render(path, template_values))
 
+def item2dict(i):
+  jsonitem = {}
+  jsonitem["no"] = unicode(i.no)
+  jsonitem["urn"] = list(i.urn)
+  jsonitem["oaiids"] = list(i.oaiid)
+  jsonitem["sesamids"] = list(i.sesamid)
+  jsonitem["isbn"] = list(i.isbn)
+  jsonitem["pages"] = unicode(i.pages)
+  jsonitem["title"] = unicode(i.title)
+  jsonitem["creator"] = unicode(i.creator)
+  jsonitem["public"] = unicode(i.public)
+  jsonitem["bokhylla"] = unicode(i.bokhylla)
+  jsonitem["urn_url"] = []
+  jsonitem["pdf_url"] = []
+  # Links to Bokhylla based on URN
+  for urn in i.urn:
+    jsonitem["urn_url"].append("http://www.nb.no/utlevering/contentview.jsf?urn=" + urn)
+    if i.public:
+      jsonitem["pdf_url"].append("http://www.nb.no/utlevering/pdfbook?id=" + urn[14:])
+  jsonitem["bibsys_url"] = []
+  # Links to BIBSYS, based on oaiid
+  for oaiid in i.oaiid:
+    jsonitem["bibsys_url"].append("http://ask.bibsys.no/ask/action/show?pid=" + oaiid[21:] + "&kid=biblio")
+  return jsonitem
+          
 def main():
   application = webapp.WSGIApplication([('/bokhylladb/', MainHandler), 
                                         ('/bokhylladb/item/', ViewItem)
