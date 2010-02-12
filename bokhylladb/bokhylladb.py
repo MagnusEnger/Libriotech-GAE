@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-import os, pymarc, random
+import os, random
 
 from google.appengine.ext import db, webapp
 from google.appengine.ext.db import stats
@@ -84,14 +84,18 @@ class MainHandler(webapp.RequestHandler):
     elif self.request.get('format') == 'marc' or self.request.get('format') == 'marcxml':
       marcout = "";
       for item in items:
+        # Turn item into MARC
         marcitem = item2marc(item)
+         # Format MARC 
         if self.request.get('format') == 'marc':
           marcout = marcout + "\n" + marcitem.as_marc()
         elif self.request.get('format') == 'marcxml':
           marcout = marcout + "\n" + marcxml.record_to_xml(marcitem)
+      # Output headers and add any extra formatting
       if self.request.get('format') == 'marcxml':
         self.response.headers["Content-Type"] = "text/xml"
         marcout = "<records>" + marcout + "</records>"
+      # Output
       self.response.out.write(marcout)    
     else:
       template_values["query_string"] = self.request.query_string
