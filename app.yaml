@@ -1,0 +1,27 @@
+application: libriotech
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /
+  script: main.py
+  
+### BOKHYLLADB
+
+# Location of CSS etc
+- url: /bokhylladb/static
+  static_dir: bokhylladb/static
+
+- url: /bokhylladb/remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  login: admin
+
+# Admin script
+# - url: /bokhylladb/admin/.*
+#   script: bokhylladb/admin.py
+#   login: admin
+
+# Public script
+- url: /bokhylladb/.*
+  script: bokhylladb/bokhylladb.py

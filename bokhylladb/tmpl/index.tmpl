@@ -1,0 +1,83 @@
+{% extends "html.tmpl" %}
+{% block content %}
+
+{% if items %}
+	{% for item in items %}
+		
+		<div class="item">
+		{% if item.creator %}
+	    	<span class="item_creator">{{ item.creator }}</span>: 
+	    {% endif %}
+		{% if item.title %}
+		    <span class="item_title">{{ item.title }}</span>
+		    {% else %}
+		    Ingen tittel
+	    {% endif %}
+	    <br />|
+	    <a href="/bokhylladb/?no={{ item.no }}" title="Detaljert visning">{{ item.no }}</a> |
+	    {% for this_urn in item.urn %}
+	    	<a href="http://www.nb.no/utlevering/contentview.jsf?urn={{ this_urn }}">Bokhylla.no</a> 
+	    	{% if item.bokhylla or item.public %} fulltekst {% endif %} |
+	    	{% if item.public %}
+	    	<a href="http://www.nb.no/utlevering/pdfbook?id={{ this_urn|cut:"URN:NBN:no-nb_" }}">PDF</a> |
+	    	{% endif %}
+	    {% endfor %}
+	    {% for this_oaiid in item.oaiid %}
+	    	<a href="http://ask.bibsys.no/ask/action/show?pid={{ this_oaiid|lower|cut:"oai:bibsys.no:biblio:" }}&kid=biblio">BIBSYS</a> |
+	    {% endfor %}
+	    <br />
+	    <span class="item_added_modified">
+		    Lagt til: <span class="item_date_added">{{ item.date_added|date:"Y-m-d" }}</span> 
+		    Siste endret: <span class="item_last_modified">{{ item.last_modified|date:"Y-m-d" }}</span>
+	    </span>
+	    </div>
+	    
+	    {# Show details if there is only one item #}
+	    {% if forloop.first and forloop.last %}
+		    <span class="next_prev">
+		    	<a href="/bokhylladb/?no={{ item.no|add:"-1" }}">&lt; Vis forrige</a> <a href="/bokhylladb/?no={{ item.no|add:"1" }}">Vis neste &gt;</a> |
+		    </span>
+	    	<h2>Detaljer</h2>
+	    	<div class="details">
+	    	{% ifnotequal item.isbn "" %}
+		    	<h3>ISBN</h3>
+		    	<ul>
+				{% for this_isbn in item.isbn %}
+			    	<li>{{ this_isbn }}</li>
+			    {% endfor %}
+			    </ul>
+			{% endifnotequal %}
+	    	<h3>Sidetall</h3>
+	    	<ul>
+		    	<li>{{ item.pages }}</li>
+		    </ul>
+	    	<h3>URN</h3>
+	    	<ul>
+			{% for this_urn in item.urn %}
+		    	<li>{{ this_urn }}</li>
+		    {% endfor %}
+		    </ul>
+		    <h3>OAIID</h3>
+		    <ul>
+		    {% for this_oaiid in item.oaiid %}
+		    	<li>{{ this_oaiid }}</li>
+		    {% endfor %}
+		    </ul>
+		    <h3>SESAMID</h3>
+		    <ul>
+		    {% for this_sesamid in item.sesamid %}
+		    	<li>{{ this_sesamid }}</li>
+		    {% endfor %}
+		    </ul>
+		    </div>
+		{% endif %}	    
+	    
+	{% endfor %}
+	<div class="view_as">
+		<p>Vis som: <a href="?{{query_string}}&format=json" class="view_as_json">JSON</a></p>
+	</div>
+{% else %}	
+	<p class="error>Fant ingen poster!</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>BokhyllaDB</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/> 
+<link rel="stylesheet" type="text/css" href="/bokhylladb/static/bokhylladb.css" />
+</head>
+<body>
+<h1><a href="">BokhyllaDB</a></h1>
+
+<div class="nav">
+<a href="/bokhylladb/">Vis nyeste</a>
+<!-- 
+<a href="/bokhylladb/?coll=public">I det fri</a> -
+<a href="/bokhylladb/?coll=bokhylla">Bokhylla iht. avtalen</a> 
+-->
+</div>
+
+<form method="GET">
+ISBN: <input type="text" name="isbn" value="{{ isbn }}" />
+<input type="submit" />
+</form>
+
+<hr />
+
+{% if error %}
+  <div class="error">{{ error }}</div>
+{% endif %}
+
+{% if msg %}
+  <div class="msg">{{ msg }}</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+<hr />
+<p>
+Created by <a href="http://libriotech.no/">Libriotech</a>. 
+<!-- a href="http://github.com/MagnusEnger/pymarc4gae">Source code</a --> 
+Work in progress...
+</p>
+</body>
+</html>
