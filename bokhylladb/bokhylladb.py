@@ -15,12 +15,13 @@
 # limitations under the License.
 #
 
-import os, random
+import os, pymarc, random
 
 from google.appengine.ext import db, webapp
 from google.appengine.ext.db import stats
 from google.appengine.ext.webapp import util, template
 from django.utils import simplejson
+from pymarc import Record, Field, marcxml
 
 class BokhyllaItem(db.Model):
   no = db.IntegerProperty()
@@ -74,15 +75,38 @@ class MainHandler(webapp.RequestHandler):
     if items:
       template_values["items"] = items
 
+    # Output
     if self.request.get('format') == 'json':
       jsonitems = []
       for item in items:
         jsonitems.append(item2dict(item))
       self.response.out.write(simplejson.dumps(jsonitems))
+    if self.request.get('format') == 'marc':
+      marcout = "";
+      for item in items:
+        marcitem = item2marc(item)
+        marcout = marcout + "\n\n" + marcitem.as_marc()
+      self.response.out.write(marcout)
     else:
       template_values["query_string"] = self.request.query_string
       path = os.path.join(os.path.dirname(__file__), 'tmpl/index.tmpl')
       self.response.out.write(template.render(path, template_values))
+
+# Turn item into minimal MARC-record
+def item2marc(i):
+  r = Record()
+  id = unicode(i.no)
+  r.add_field(Field(tag='001', data=id))
+  if i.creator:
+    r.add_field(Field(tag = '100', indicators = ['',''], subfields = ['a', i.creator]))
+  if i.title:
+    r.add_field(Field(tag = '245', indicators = ['',''], subfields = ['a', i.title]))
+  if i.pages:
+    pages = unicode(i.pages)
+    r.add_field(Field(tag = '300', indicators = ['',''], subfields = ['a', pages]))
+  for urn in i.urn:
+    r.add_field(Field(tag = '856', indicators = ['',''], subfields = ['g', urn]))
+  return r
 
 # Translate items into dicts that can be serialzied as e.g. JSON
 def item2dict(i):
@@ -111,9 +135,7 @@ def item2dict(i):
   return jsonitem
           
 def main():
-  application = webapp.WSGIApplication([('/bokhylladb/', MainHandler), 
-                                        ('/bokhylladb/item/', ViewItem)
-                                       ],
+  application = webapp.WSGIApplication([('/bokhylladb/', MainHandler)],
                                        debug=True)
   util.run_wsgi_app(application)
 
