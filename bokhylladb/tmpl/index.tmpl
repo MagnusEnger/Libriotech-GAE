@@ -74,7 +74,11 @@
 	    
 	{% endfor %}
 	<div class="view_as">
-		<p>Vis som: <a href="?{{query_string}}&format=json" class="view_as_json">JSON</a></p>
+		<p>Vis som: 
+		<a href="?{{query_string}}&format=json" class="view_as_json">JSON</a>
+		<a href="?{{query_string}}&format=marc" class="view_as_marc">MARC</a>
+		<a href="?{{query_string}}&format=marcxml" class="view_as_marcxml">MARCXML</a>
+		</p>
 	</div>
 {% else %}	
 	<p class="error>Fant ingen poster!</p>

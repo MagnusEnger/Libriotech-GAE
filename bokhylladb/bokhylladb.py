@@ -81,23 +81,18 @@ class MainHandler(webapp.RequestHandler):
       for item in items:
         jsonitems.append(item2dict(item))
       self.response.out.write(simplejson.dumps(jsonitems))
-    
-    if self.request.get('format') == 'marc' or self.request.get('format') == 'marcxml':
-      
+    elif self.request.get('format') == 'marc' or self.request.get('format') == 'marcxml':
       marcout = "";
-      
       for item in items:
         marcitem = item2marc(item)
         if self.request.get('format') == 'marc':
           marcout = marcout + "\n" + marcitem.as_marc()
         elif self.request.get('format') == 'marcxml':
           marcout = marcout + "\n" + marcxml.record_to_xml(marcitem)
-          
       if self.request.get('format') == 'marcxml':
         self.response.headers["Content-Type"] = "text/xml"
         marcout = "<records>" + marcout + "</records>"
-      self.response.out.write(marcout)
-    
+      self.response.out.write(marcout)    
     else:
       template_values["query_string"] = self.request.query_string
       path = os.path.join(os.path.dirname(__file__), 'tmpl/index.tmpl')
