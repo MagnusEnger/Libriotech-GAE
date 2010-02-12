@@ -70,7 +70,7 @@ class MainHandler(webapp.RequestHandler):
         items = db.GqlQuery("SELECT * FROM BokhyllaItem WHERE bokhylla = True ORDER BY no DESC LIMIT 25")
     else:  
       items = db.GqlQuery("SELECT * FROM BokhyllaItem ORDER BY no DESC LIMIT 25")
-    
+        
     if items:
       template_values["items"] = items
 
@@ -80,15 +80,25 @@ class MainHandler(webapp.RequestHandler):
       for item in items:
         jsonitem = {}
         jsonitem["no"] = unicode(item.no)
-        jsonitem["urn"] = unicode(item.urn)
-        jsonitem["oaiids"] = unicode(item.oaiid)
-        jsonitem["sesamids"] = unicode(item.sesamid)
-        jsonitem["isbn"] = unicode(item.isbn)
+        jsonitem["urn"] = list(item.urn)
+        jsonitem["oaiids"] = list(item.oaiid)
+        jsonitem["sesamids"] = list(item.sesamid)
+        jsonitem["isbn"] = list(item.isbn)
         jsonitem["pages"] = unicode(item.pages)
         jsonitem["title"] = unicode(item.title)
         jsonitem["creator"] = unicode(item.creator)
         jsonitem["public"] = unicode(item.public)
         jsonitem["bokhylla"] = unicode(item.bokhylla)
+        jsonitem["urn_url"] = []
+        jsonitem["pdf_url"] = []
+        # Links to Bokhylla based on URN
+        for urn in item.urn:
+          jsonitem["urn_url"].append("http://www.nb.no/utlevering/contentview.jsf?urn=" + urn)
+          jsonitem["pdf_url"].append("http://www.nb.no/utlevering/pdfbook?id=" + urn[14:])
+        jsonitem["bibsys_url"] = []
+        # Links to BIBSYS, based on oaiid
+        for oaiid in item.oaiid:
+          jsonitem["bibsys_url"].append("http://ask.bibsys.no/ask/action/show?pid=" + oaiid[21:] + "&kid=biblio")
         jsonitems.append(jsonitem)
       self.response.out.write(simplejson.dumps(jsonitems))
     else:
