@@ -75,31 +75,16 @@ class MainHandler(webapp.RequestHandler):
       template_values["items"] = items
 
     if self.request.get('format') == 'json':
-      # Translate items into dicts that can be serialzied as JSON
       jsonitems = []
       for item in items:
-        jsonitem = item2dict(item)
-        jsonitems.append(jsonitem)
+        jsonitems.append(item2dict(item))
       self.response.out.write(simplejson.dumps(jsonitems))
     else:
       template_values["query_string"] = self.request.query_string
       path = os.path.join(os.path.dirname(__file__), 'tmpl/index.tmpl')
       self.response.out.write(template.render(path, template_values))
 
-class ViewItem(webapp.RequestHandler):
-
-  def get(self):
-  
-    template_values = {}
-    if self.request.get('no'):
-      item = BokhyllaItem.get(no)
-      template_values = {'item': item}
-    else:
-      template_values = {'error': "Ingen identifikator angitt."}
-      
-    path = os.path.join(os.path.dirname(__file__), 'tmpl/index.tmpl')
-    self.response.out.write(template.render(path, template_values))
-
+# Translate items into dicts that can be serialzied as e.g. JSON
 def item2dict(i):
   jsonitem = {}
   jsonitem["no"] = unicode(i.no)
