@@ -10,5 +10,16 @@
 <body>
 <h1>Libriotech @ GAE</h1>
 <p>This is the Google App Engine testing ground for <a href="http://libriotech.no/">Libriotech</a>.</p>
+
+<h2>Projects</h2>
+
+<ul>
+<li><a href="/bokhylladb/">BokhyllaDB</a></li>
+</ul>
+
+<h2>Source code</h2>
+
+<p><a href="http://github.com/MagnusEnger/Libriotech-GAE">Available on GitHub</a></p>
+
 </body>
 </html>
