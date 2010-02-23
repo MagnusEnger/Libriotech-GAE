@@ -23,6 +23,9 @@ from google.appengine.ext.webapp import util, template
 from django.utils import simplejson
 from pymarc import Record, Field, marcxml
 
+# Config
+items_per_page = 10
+
 class BokhyllaItem(db.Model):
   no = db.IntegerProperty()
   urn = db.ListProperty(unicode)
@@ -70,7 +73,12 @@ class MainHandler(webapp.RequestHandler):
       elif coll == 'bokhylla':
         items = db.GqlQuery("SELECT * FROM BokhyllaItem WHERE bokhylla = True ORDER BY no DESC LIMIT 25")
     else:  
-      items = db.GqlQuery("SELECT * FROM BokhyllaItem ORDER BY no DESC LIMIT 25")
+      if self.request.get('page'):
+        offset = items_per_page * int(self.request.get('page'))
+        offset_str = str(offset)
+        items = db.GqlQuery("SELECT * FROM BokhyllaItem ORDER BY no DESC LIMIT 25 OFFSET " + offset_str)
+      else:
+        items = db.GqlQuery("SELECT * FROM BokhyllaItem ORDER BY no DESC LIMIT 25")
         
     if items:
       template_values["items"] = items
@@ -99,6 +107,8 @@ class MainHandler(webapp.RequestHandler):
       self.response.out.write(marcout)    
     else:
       template_values["query_string"] = self.request.query_string
+      template_values["page"] = self.request.get('page')
+      template_values["no"] = self.request.get('no')
       path = os.path.join(os.path.dirname(__file__), 'tmpl/index.tmpl')
       self.response.out.write(template.render(path, template_values))
 

@@ -29,3 +29,7 @@ h1 a {
 .item_added_modified {
   color: silver;
 }
+.fulltext{
+  color: red;
+  font-weight: bold;	
+}

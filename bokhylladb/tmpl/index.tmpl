@@ -2,6 +2,23 @@
 {% block content %}
 
 {% if items %}
+
+	{# Navigation #}
+	{% if not no %}
+		<p>
+		{% if page %}
+			{% ifequal page "0" %}
+				&lt; Vis forrige side
+			{% else %}
+				<a href="?page={{ page|add:"-1" }}">&lt; Vis forrige side</a>
+			{% endifequal %}
+			<a href="?page={{ page|add:"1" }}">Vis neste side &gt;</a>
+		{% else %}
+			&lt; Vis forrige side <a href="?page=1">Vis neste side &gt;</a>
+		{% endif %}
+		</p>
+	{% endif %}
+	
 	{% for item in items %}
 		
 		<div class="item">
@@ -17,9 +34,11 @@
 	    <a href="/bokhylladb/?no={{ item.no }}" title="Detaljert visning">{{ item.no }}</a> |
 	    {% for this_urn in item.urn %}
 	    	<a href="http://www.nb.no/utlevering/contentview.jsf?urn={{ this_urn }}">Bokhylla.no</a> 
-	    	{% if item.bokhylla or item.public %} fulltekst {% endif %} |
+	    	{% if item.bokhylla or item.public %} 
+	    		<span class="fulltext">fulltekst</span>
+	    	{% endif %} |
 	    	{% if item.public %}
-	    	<a href="http://www.nb.no/utlevering/pdfbook?id={{ this_urn|cut:"URN:NBN:no-nb_" }}">PDF</a> |
+	    		<a href="http://www.nb.no/utlevering/pdfbook?id={{ this_urn|cut:"URN:NBN:no-nb_" }}" class="fulltext">PDF</a> |
 	    	{% endif %}
 	    {% endfor %}
 	    {% for this_oaiid in item.oaiid %}
@@ -35,7 +54,8 @@
 	    {# Show details if there is only one item #}
 	    {% if forloop.first and forloop.last %}
 		    <span class="next_prev">
-		    	<a href="/bokhylladb/?no={{ item.no|add:"-1" }}">&lt; Vis forrige</a> <a href="/bokhylladb/?no={{ item.no|add:"1" }}">Vis neste &gt;</a> |
+		    	<a href="/bokhylladb/?no={{ item.no|add:"-1" }}">&lt; Vis forrige post</a> 
+		    	<a href="/bokhylladb/?no={{ item.no|add:"1" }}">Vis neste post&gt;</a> 
 		    </span>
 	    	<h2>Detaljer</h2>
 	    	<div class="details">
