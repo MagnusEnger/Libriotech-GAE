@@ -76,9 +76,9 @@ class MainHandler(webapp.RequestHandler):
       if self.request.get('page'):
         offset = items_per_page * int(self.request.get('page'))
         offset_str = str(offset)
-        items = db.GqlQuery("SELECT * FROM BokhyllaItem ORDER BY no DESC LIMIT 25 OFFSET " + offset_str)
+        items = db.GqlQuery("SELECT * FROM BokhyllaItem ORDER BY no DESC LIMIT " + str(items_per_page) + " OFFSET " + offset_str)
       else:
-        items = db.GqlQuery("SELECT * FROM BokhyllaItem ORDER BY no DESC LIMIT 25")
+        items = db.GqlQuery("SELECT * FROM BokhyllaItem ORDER BY no DESC LIMIT " + str(items_per_page))
         
     if items:
       template_values["items"] = items
@@ -109,6 +109,7 @@ class MainHandler(webapp.RequestHandler):
       template_values["query_string"] = self.request.query_string
       template_values["page"] = self.request.get('page')
       template_values["no"] = self.request.get('no')
+      template_values["isbn"] = self.request.get('isbn')
       path = os.path.join(os.path.dirname(__file__), 'tmpl/index.tmpl')
       self.response.out.write(template.render(path, template_values))
 
